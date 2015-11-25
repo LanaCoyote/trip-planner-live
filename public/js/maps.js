@@ -23,30 +23,6 @@ function initialize_gmaps() {
     position: myLatlng,
     title: 'Hello World!'
   });
-
-  //var hotelLocation = [40.705137, -74.007624];
-  //var restaurantLocations = [
-        //[40.705137, -74.013940],
-        //[40.708475, -74.010846]
-      //];
-  //var activityLocations = [
-        //[40.716291, -73.995315],
-        //[40.707119, -74.003602]
-      //];
-
-  //drawLocation(hotelLocation, {
-    //icon: '/images/lodging_0star.png'
-  //});
-  //restaurantLocations.forEach(function(loc) {
-    //drawLocation(loc, {
-      //icon: '/images/restaurant.png'
-    //});
-  //});
-  //activityLocations.forEach(function(loc) {
-    //drawLocation(loc, {
-      //icon: '/images/star-3.png'
-    //});
-  //});
 }
 
 function drawLocation(location, opts) {
@@ -62,6 +38,17 @@ function drawLocation(location, opts) {
 $(document).ready(function() {
   initialize_gmaps();
 });
+
+function generateBounds() {
+  var bounds = new google.maps.LatLngBounds();
+
+  if ( days[current_day_idx].markers.length ) {
+    days[current_day_idx].markers.forEach( function( marker ) {
+      bounds.extend( marker.position );
+    } );
+    map.fitBounds( bounds );
+  }
+}
 
 var styleArr = [{
   featureType: 'landscape',

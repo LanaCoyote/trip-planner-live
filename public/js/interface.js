@@ -32,10 +32,6 @@ function removeToday() {
     var $day_btns = $( '.day-btn' );
     $day_btns[$day_btns.length - 2].remove();
 
-    // var new_day_idx = current_day_idx >= days.length - 2 ? days.length - 2 : current_day_idx + 1;
-    // var old_day_idx = current_day_idx;
-    // changeDay(new_day_idx);
-    // days.splice(old_day_idx, 1);
     clearMarkersForToday();
     days.splice(current_day_idx, 1);
     if (current_day_idx >= days.length)
@@ -77,6 +73,8 @@ function changeDay(new_day_idx) {
     today.activities.forEach(function(activity) {
         addItemToListGroup(activity, activities_list_group);
     })
+
+    generateBounds();
 }
 
 function getType( item ) {
@@ -102,7 +100,9 @@ function typeMatcher( item, hotel_cb, restaurant_cb, activity_cb ) {
 
 function addItemToDay( item, day_idx ) {
   var ifHotel = function( item ) {
+    if( days[day_idx].hotel ) days[day_idx].hotel.marker.setMap( null );
     days[day_idx].hotel = item;
+    if( hotel_list_group.html().length > 0 ) hotel_list_group.html( '' );
     if( isToday( day_idx ) ) addItemToListGroup( item, hotel_list_group );
   }
 
@@ -120,6 +120,8 @@ function addItemToDay( item, day_idx ) {
   if (item.marker) item.marker.setMap(null);
   item.marker = drawLocation(item.place[0].location);
   days[day_idx].markers.push(item.marker);
+
+  generateBounds();
 }
 
 function removeItemFromDay( item, day_idx ) {
@@ -137,6 +139,9 @@ function removeItemFromDay( item, day_idx ) {
 
   typeMatcher( item, ifHotel, otherwise, otherwise );
   item.marker.setMap(null);
+  days[day_idx].markers.splice( days[day_idx].markers.indexOf( item.marker ), 1 );
+
+  generateBounds();
 }
 
 function getItemByName( name, type ) {
@@ -182,12 +187,6 @@ function addItemToListGroup( item, list_group ) {
   // add it to the list group
   list_group.append( it_item );
 }
-
-//function removeParentFromListGroup() {
-  //$( this ).parent().remove();
-//}
-
-
 
 $( "#add-activities-panel" ).on( 'click', 'button', function( event ) {
   var $btn = $( this );
